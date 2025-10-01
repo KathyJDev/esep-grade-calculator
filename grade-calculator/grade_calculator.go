@@ -2,14 +2,21 @@ package esepunittests
 
 type GradeCalculator struct {
 	grades []Grade
+	systemType SystemType
 }
 
 type GradeType int
+type SystemType int
 
 const (
 	Assignment GradeType = iota
 	Exam
 	Essay
+)
+
+const (
+	LetterGrade SystemType = iota
+	PassFail
 )
 
 var gradeTypeName = map[GradeType]string{
@@ -28,26 +35,35 @@ type Grade struct {
 	Type  GradeType
 }
 
-func NewGradeCalculator() *GradeCalculator {
+func NewGradeCalculator(st SystemType) *GradeCalculator {
 	return &GradeCalculator{
 		grades: make([]Grade, 0),
+		systemType: st,
 	}
 }
 
 func (gc *GradeCalculator) GetFinalGrade() string {
 	numericalGrade := gc.calculateNumericalGrade()
 
-	if numericalGrade >= 90 {
-		return "A"
-	} else if numericalGrade >= 80 {
-		return "B"
-	} else if numericalGrade >= 70 {
-		return "C"
-	} else if numericalGrade >= 60 {
-		return "D"
+	switch gc.systemType {
+	case LetterGrade:
+		if numericalGrade >= 90 {
+			return "A"
+		} else if numericalGrade >= 80 {
+			return "B"
+		} else if numericalGrade >= 70 {
+			return "C"
+		} else if numericalGrade >= 60 {
+			return "D"
+		}
+		return "F"
+	case PassFail:
+		if numericalGrade >= 70 {
+			return "Pass"
+		}
+		return "Fail"
 	}
-
-	return "F"
+	return ""
 }
 
 func (gc *GradeCalculator) AddGrade(name string, grade int, gradeType GradeType) {
